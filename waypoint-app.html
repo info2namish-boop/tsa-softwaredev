@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WayPoint — Navigation for Everyone</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink:    #FF6EB4;
+  --pink-l:  #FFD6EC;
+  --pink-d:  #C0397A;
+  --mint:    #3DD9AC;
+  --mint-l:  #C8F7EC;
+  --mint-d:  #1A9E78;
+  --sky:     #59C8FF;
+  --sky-l:   #D6F1FF;
+  --sky-d:   #1A7FB5;
+  --lemon:   #FFE040;
+  --lemon-l: #FFFACC;
+  --lemon-d: #B8960A;
+  --coral:   #FF7B6B;
+  --coral-l: #FFE0DD;
+  --coral-d: #C03828;
+  --lavender:#B48EFF;
+  --lav-l:   #EDE0FF;
+  --lav-d:   #6A3DBF;
+  --bg:      #FFF5FB;
+  --white:   #FFFFFF;
+  --gray50:  #F9F4FD;
+  --gray100: #EFE7F7;
+  --gray300: #C8B8D8;
+  --gray500: #8A7A9A;
+  --gray700: #4A3A5A;
+  --gray900: #2A1A3A;
+  --radius:  18px;
+  --radius-lg: 28px;
+  --shadow:  0 4px 24px rgba(180,80,160,0.10);
+  --shadow-pop: 0 8px 32px rgba(180,80,160,0.18);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--gray900);
+  min-height: 100vh;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ═══════════════════════════════════════
+   HOME SCREEN
+═══════════════════════════════════════ */
+.home-screen {
+  background: linear-gradient(160deg, #FFF0FA 0%, #F0FAFF 50%, #F5FFEE 100%);
+  overflow-y: auto;
+}
+.home-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 32px 20px;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-dot {
+  width: 52px; height: 52px; border-radius: 16px;
+  background: var(--pink); display: flex; align-items: center; justify-content: center;
+  font-size: 26px; box-shadow: 0 4px 16px rgba(255,110,180,0.35);
+}
+.brand-name {
+  font-family: 'Fredoka One', cursive;
+  font-size: 32px; color: var(--pink-d); line-height: 1;
+}
+.brand-sub { font-size: 13px; color: var(--gray500); font-weight: 600; margin-top: 2px; }
+
+/* BIG ENTER BUTTON */
+.enter-btn-wrap { padding: 10px 32px 0; }
+.enter-btn {
+  width: 100%; padding: 28px 32px;
+  border-radius: 28px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
+  color: #fff; font-family: 'Fredoka One', cursive;
+  font-size: 30px; letter-spacing: 0.5px;
+  box-shadow: 0 8px 32px rgba(255,110,180,0.38);
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.enter-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,110,180,0.45); }
+.enter-btn:active { transform: scale(0.98); }
+.enter-btn-icon { font-size: 36px; }
+
+/* HERO */
+.hero { padding: 36px 32px 24px; text-align: center; }
+.hero-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 48px; line-height: 1.15;
+  background: linear-gradient(135deg, var(--pink-d), var(--lav-d));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+.hero-subtitle {
+  font-size: 19px; color: var(--gray500); max-width: 560px; margin: 0 auto 28px;
+  font-weight: 600;
+}
+
+/* AUDIO PLAYER BAR */
+.audio-bar {
+  margin: 0 32px 32px;
+  background: var(--white); border-radius: 20px;
+  padding: 16px 20px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 14px;
+}
+.play-btn {
+  width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--mint); color: #fff; font-size: 22px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(61,217,172,0.4); transition: transform 0.15s, background 0.2s;
+}
+.play-btn:hover { transform: scale(1.07); }
+.play-btn.playing { background: var(--coral); box-shadow: 0 4px 14px rgba(255,123,107,0.4); animation: play-pulse 1.4s ease-in-out infinite; }
+@keyframes play-pulse { 0%,100%{box-shadow:0 4px 14px rgba(255,123,107,0.4)} 50%{box-shadow:0 4px 22px rgba(255,123,107,0.65)} }
+.audio-info { flex: 1; }
+.audio-title { font-size: 14px; font-weight: 700; color: var(--gray700); }
+.audio-sub { font-size: 12px; color: var(--gray500); margin-top: 2px; }
+.audio-progress { flex: 1; height: 5px; border-radius: 3px; background: var(--gray100); overflow: hidden; margin-top: 6px; }
+.audio-fill { height: 100%; background: var(--mint); width: 0%; transition: width 0.5s linear; border-radius: 3px; }
+
+/* SECTIONS */
+.home-section { padding: 0 32px 32px; }
+.section-head {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.section-icon {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.section-icon.pink  { background: var(--pink-l); }
+.section-icon.mint  { background: var(--mint-l); }
+.section-icon.sky   { background: var(--sky-l); }
+.section-icon.lemon { background: var(--lemon-l); }
+.section-title { font-family: 'Fredoka One', cursive; font-size: 24px; color: var(--gray900); }
+
+.story-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 24px 28px; box-shadow: var(--shadow); line-height: 1.8;
+  font-size: 16px; color: var(--gray700); font-weight: 600;
+}
+.story-card p + p { margin-top: 14px; }
+.story-card strong { color: var(--pink-d); }
+
+.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.how-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+}
+.how-num {
+  width: 36px; height: 36px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka One', cursive; font-size: 18px; color: #fff;
+  margin-bottom: 12px;
+}
+.how-num.n1 { background: var(--pink); }
+.how-num.n2 { background: var(--mint-d); }
+.how-num.n3 { background: var(--sky-d); }
+.how-num.n4 { background: var(--lavender); }
+.how-num.n5 { background: var(--coral); }
+.how-num.n6 { background: var(--lemon-d); }
+.how-title { font-weight: 800; font-size: 15px; color: var(--gray900); margin-bottom: 4px; }
+.how-desc { font-size: 13px; color: var(--gray500); font-weight: 600; line-height: 1.5; }
+
+.voice-commands-card {
+  background: var(--lav-l); border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.cmd-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.cmd-item {
+  background: var(--white); border-radius: 12px; padding: 10px 14px;
+  font-size: 13px; font-weight: 700; color: var(--lav-d);
+  display: flex; align-items: center; gap: 8px;
+}
+.cmd-item::before { content: "🎤"; font-size: 14px; }
+
+.family-card {
+  background: linear-gradient(135deg, var(--mint-l), var(--sky-l));
+  border-radius: var(--radius-lg); padding: 24px 28px;
+  font-size: 16px; color: var(--gray700); font-weight: 600; line-height: 1.8;
+}
+.family-card p + p { margin-top: 12px; }
+.family-card strong { color: var(--mint-d); }
+
+/* HOME FOOTER */
+.home-footer {
+  padding: 20px 32px 40px; text-align: center;
+  font-size: 13px; color: var(--gray300); font-weight: 700;
+}
+
+/* ═══════════════════════════════════════
+   APP SCREEN
+═══════════════════════════════════════ */
+.app-screen { background: var(--bg); }
+
+.app-topbar {
+  background: var(--white); box-shadow: 0 2px 12px rgba(180,80,160,0.08);
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.back-btn {
+  padding: 10px 20px; border-radius: 14px; border: 2px solid var(--pink-l);
+  background: var(--white); color: var(--pink-d); font-size: 14px; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  font-family: 'Nunito', sans-serif; transition: background 0.15s;
+}
+.back-btn:hover { background: var(--pink-l); }
+.app-brand {
+  font-family: 'Fredoka One', cursive;
+  font-size: 24px; color: var(--pink-d); flex: 1;
+}
+.gps-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 20px;
+  background: var(--mint-l); font-size: 12px; color: var(--mint-d);
+  font-weight: 800; letter-spacing: 0.3px;
+}
+.gps-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint-d); animation: gps-pulse 1.8s ease-in-out infinite; }
+@keyframes gps-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ANNOUNCE BAR */
+.announce-bar {
+  background: var(--mint-l); border-bottom: 2px solid var(--mint);
+  padding: 12px 24px; display: flex; align-items: center; gap: 12px;
+}
+.announce-icon {
+  width: 42px; height: 42px; border-radius: 13px;
+  background: var(--mint); display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.announce-text { font-size: 14px; color: var(--mint-d); font-weight: 700; }
+.announce-text span { color: var(--gray700); font-weight: 600; display: block; font-size: 13px; }
+
+/* MAIN LAYOUT */
+.app-body { display: grid; grid-template-columns: 360px 1fr; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--white); border-right: 2px solid var(--gray100);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.sidebar-top {
+  padding: 16px 18px 12px; border-bottom: 2px solid var(--gray100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sidebar-label { font-size: 12px; font-weight: 800; color: var(--gray500); letter-spacing: 0.8px; text-transform: uppercase; }
+.big-add-btn {
+  padding: 10px 20px; border-radius: 14px; border: none; cursor: pointer;
+  background: var(--pink); color: #fff; font-size: 15px; font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 14px rgba(255,110,180,0.35);
+  display: flex; align-items: center; gap: 6px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.big-add-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,110,180,0.45); }
+.sidebar-list { flex: 1; overflow-y: auto; padding: 8px; }
+
+/* WP CARDS */
+.wp-card {
+  border-radius: var(--radius); padding: 14px 16px;
+  margin-bottom: 8px; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.15s;
+  background: var(--gray50);
+  position: relative;
+}
+.wp-card:hover { background: var(--white); border-color: var(--gray100); box-shadow: var(--shadow); }
+.wp-card.active { background: var(--white); border-color: var(--pink); box-shadow: var(--shadow-pop); }
+.wp-row { display: flex; align-items: flex-start; gap: 12px; }
+.wp-icon {
+  width: 44px; height: 44px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.t-place  { background: var(--pink-l); }
+.t-hazard { background: var(--coral-l); }
+.t-turn   { background: var(--mint-l); }
+.t-home   { background: var(--sky-l); }
+.wp-meta { flex: 1; min-width: 0; }
+.wp-name { font-size: 15px; font-weight: 800; color: var(--gray900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wp-snippet { font-size: 12px; color: var(--gray500); font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wp-dist { font-size: 12px; font-weight: 700; color: var(--mint-d); margin-top: 4px; }
+.wp-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 8px; margin-right: 4px; }
+.badge-sub { background: var(--lav-l); color: var(--lav-d); }
+.badge-alert { background: var(--coral-l); color: var(--coral-d); }
+
+.wp-del-btn {
+  width: 32px; height: 32px; border-radius: 10px; border: 2px solid var(--coral-l);
+  background: var(--white); color: var(--coral); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  opacity: 0; transition: opacity 0.15s;
+  font-family: 'Nunito', sans-serif; font-weight: 800;
+}
+.wp-card:hover .wp-del-btn, .wp-card.active .wp-del-btn { opacity: 1; }
+.wp-del-btn:hover { background: var(--coral-l); }
+
+.subnotes-expanded { padding: 8px 0 0 56px; display: none; }
+.wp-card.open .subnotes-expanded { display: block; }
+.sn-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.sn-pill {
+  flex: 1; padding: 7px 12px; border-radius: 10px;
+  background: var(--gray100); font-size: 12px; font-weight: 700; color: var(--gray700);
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+  transition: background 0.12s;
+}
+.sn-pill:hover { background: var(--pink-l); color: var(--pink-d); }
+.sn-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pink); flex-shrink: 0; }
+.sn-del-btn {
+  width: 26px; height: 26px; border-radius: 8px; border: 1.5px solid var(--coral-l);
+  background: transparent; color: var(--coral); font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s; font-weight: 800;
+}
+.sn-row:hover .sn-del-btn { opacity: 1; }
+
+/* EMPTY STATE */
+.empty-wp { padding: 40px 20px; text-align: center; color: var(--gray300); }
+.empty-wp .big { font-size: 48px; margin-bottom: 12px; }
+.empty-wp p { font-size: 14px; font-weight: 700; }
+
+/* ── RIGHT PANEL ── */
+.right-panel { display: flex; flex-direction: column; overflow: hidden; }
+
+/* MAP */
+.map-area {
+  flex: 1; position: relative; background: #E8F8F2;
+  min-height: 280px; overflow: hidden;
+}
+.map-dots {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(61,217,172,0.25) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.map-ring {
+  position: absolute; border-radius: 50%;
+  border: 2px solid rgba(61,217,172,0.2);
+  animation: map-ring 3.5s ease-out infinite;
+}
+@keyframes map-ring { 0%{opacity:0.9;transform:scale(0.7)} 100%{opacity:0;transform:scale(2.2)} }
+.user-dot { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 10; }
+.user-arrow { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+.user-inner { width: 18px; height: 18px; border-radius: 50%; background: var(--mint-d); border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(61,217,172,0.25); }
+.map-pin { position: absolute; transform: translate(-50%,-100%); cursor: pointer; z-index: 8; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s; }
+.map-pin:hover { transform: translate(-50%,-100%) scale(1.12); }
+.pin-body { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.pin-body span { transform: rotate(45deg); font-size: 16px; display: block; }
+.pin-lbl { margin-top: 8px; font-size: 11px; font-weight: 800; background: var(--white); border: 1.5px solid var(--gray100); padding: 2px 8px; border-radius: 8px; color: var(--gray900); white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.08); pointer-events: none; }
+.pin-place  .pin-body { background: var(--pink); }
+.pin-hazard .pin-body { background: var(--coral); }
+.pin-turn   .pin-body { background: var(--mint-d); }
+.pin-home   .pin-body { background: var(--sky-d); }
+.pin-radius { position: absolute; border-radius: 50%; border: 2px dashed rgba(61,217,172,0.4); pointer-events: none; }
+.map-ctrl { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 7px; }
+.map-btn {
+  width: 40px; height: 40px; border-radius: 13px;
+  background: var(--white); border: 1.5px solid var(--gray100);
+  font-size: 18px; font-weight: 800; cursor: pointer; color: var(--gray700);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.12s;
+}
+.map-btn:hover { background: var(--pink-l); }
+.map-range { position: absolute; bottom: 12px; left: 12px; background: var(--white); border-radius: 12px; padding: 6px 12px; font-size: 12px; font-weight: 800; color: var(--gray500); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1.5px solid var(--gray100); }
+
+/* DETAIL PANEL */
+.detail {
+  background: var(--white); border-top: 2px solid var(--gray100);
+  padding: 20px 24px; overflow-y: auto; max-height: 340px;
+}
+.detail-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.detail-name { font-family: 'Fredoka One', cursive; font-size: 24px; color: var(--gray900); }
+.detail-type { font-size: 12px; font-weight: 800; color: var(--gray500); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+.detail-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* BIG ACTION BUTTONS */
+.act-btn {
+  padding: 12px 18px; border-radius: 14px; border: none; cursor: pointer;
+  font-size: 14px; font-weight: 800; font-family: 'Nunito', sans-serif;
+  display: flex; align-items: center; gap: 6px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.act-btn:hover { transform: translateY(-1px); }
+.act-btn:active { transform: scale(0.97); }
+.btn-read { background: var(--sky-l); color: var(--sky-d); box-shadow: 0 3px 10px rgba(89,200,255,0.25); }
+.btn-read:hover { box-shadow: 0 5px 16px rgba(89,200,255,0.38); }
+.btn-sub { background: var(--lav-l); color: var(--lav-d); box-shadow: 0 3px 10px rgba(180,142,255,0.25); }
+.btn-sub:hover { box-shadow: 0 5px 16px rgba(180,142,255,0.38); }
+.btn-nav { background: var(--mint); color: #fff; box-shadow: 0 3px 10px rgba(61,217,172,0.35); }
+.btn-nav:hover { box-shadow: 0 5px 16px rgba(61,217,172,0.5); }
+.btn-del { background: var(--coral-l); color: var(--coral-d); box-shadow: 0 3px 10px rgba(255,123,107,0.2); }
+.btn-del:hover { box-shadow: 0 5px 16px rgba(255,123,107,0.35); }
+
+.note-box {
+  background: var(--gray50); border-radius: 14px; padding: 14px 16px;
+  margin-bottom: 14px; font-size: 15px; color: var(--gray700); line-height: 1.75;
+  border: 1.5px solid var(--gray100); font-weight: 600;
+}
+.note-lbl { font-size: 11px; font-weight: 800; color: var(--gray300); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+.stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--gray50); border-radius: 13px; padding: 10px 14px; border: 1.5px solid var(--gray100); }
+.stat-lbl { font-size: 11px; font-weight: 800; color: var(--gray300); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+.stat-val { font-size: 18px; font-weight: 800; }
+.stat-val.green { color: var(--mint-d); }
+.stat-val.amber { color: #B8960A; }
+
+.sec-lbl { font-size: 12px; font-weight: 800; color: var(--gray500); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sn-det-grid { display: flex; flex-direction: column; gap: 7px; }
+.sn-det-item {
+  background: var(--gray50); border-radius: 13px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  border: 1.5px solid transparent; transition: all 0.12s;
+}
+.sn-det-item:hover { background: var(--white); border-color: var(--pink); }
+.sn-det-icon { font-size: 18px; }
+.sn-det-content { flex: 1; }
+.sn-det-name { font-size: 14px; font-weight: 800; color: var(--gray900); }
+.sn-det-desc { font-size: 12px; color: var(--gray500); font-weight: 600; margin-top: 2px; }
+.sn-det-dist { font-size: 12px; font-weight: 700; color: var(--mint-d); }
+.sn-det-del {
+  width: 30px; height: 30px; border-radius: 9px; border: 1.5px solid var(--coral-l);
+  background: transparent; color: var(--coral); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  opacity: 0; transition: opacity 0.15s; font-weight: 800;
+}
+.sn-det-item:hover .sn-det-del { opacity: 1; }
+
+/* VOICE BAR */
+.voice-bar {
+  padding: 14px 20px; background: var(--white); border-top: 2px solid var(--gray100);
+  display: flex; align-items: center; gap: 14px;
+}
+.voice-big-btn {
+  width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--pink); color: #fff; font-size: 26px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 4px 18px rgba(255,110,180,0.4); transition: transform 0.12s, background 0.2s;
+}
+.voice-big-btn:hover { transform: scale(1.06); }
+.voice-big-btn.rec { background: var(--coral); animation: rec-pulse 1s ease-in-out infinite; }
+@keyframes rec-pulse { 0%,100%{box-shadow:0 4px 18px rgba(255,123,107,0.4)} 50%{box-shadow:0 4px 28px rgba(255,123,107,0.7)} }
+.voice-hint { font-size: 13px; color: var(--gray500); font-weight: 600; }
+.voice-hint strong { color: var(--gray900); font-size: 15px; font-weight: 800; display: block; margin-bottom: 2px; }
+
+/* ZONE ALERT */
+.zone-alert {
+  background: linear-gradient(135deg, var(--mint-l), var(--sky-l));
+  border-radius: 14px; padding: 12px 16px; margin-bottom: 14px;
+  border: 2px solid var(--mint); display: none;
+}
+.zone-alert.show { display: block; }
+.zone-title { font-weight: 800; color: var(--mint-d); font-size: 14px; margin-bottom: 3px; }
+.zone-msg { font-size: 13px; color: var(--gray700); font-weight: 600; }
+
+/* ═══════════════════════════════════════
+   MODALS
+═══════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0; background: rgba(80,30,100,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--white); border-radius: 28px; padding: 28px;
+  width: 460px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+  transform: translateY(12px) scale(0.98); transition: transform 0.22s;
+  box-shadow: 0 16px 64px rgba(180,80,160,0.22);
+}
+.overlay.open .modal { transform: translateY(0) scale(1); }
+.modal-icon { font-size: 44px; text-align: center; margin-bottom: 8px; }
+.modal-title { font-family: 'Fredoka One', cursive; font-size: 26px; color: var(--gray900); text-align: center; margin-bottom: 4px; }
+.modal-sub { font-size: 14px; color: var(--gray500); font-weight: 600; text-align: center; margin-bottom: 22px; }
+
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 800; color: var(--gray500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+.field input, .field textarea {
+  width: 100%; padding: 13px 15px; border-radius: 14px;
+  border: 2px solid var(--gray100); background: var(--gray50);
+  color: var(--gray900); font-size: 15px; font-family: 'Nunito', sans-serif;
+  font-weight: 600; outline: none; transition: border-color 0.15s;
+}
+.field input:focus, .field textarea:focus { border-color: var(--pink); background: var(--white); }
+.field textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+
+.type-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.type-opt {
+  padding: 12px 6px; border-radius: 14px; border: 2px solid var(--gray100);
+  background: var(--gray50); text-align: center; cursor: pointer;
+  font-size: 12px; font-weight: 800; color: var(--gray500);
+  transition: all 0.14s;
+}
+.type-opt:hover { border-color: var(--pink-l); background: var(--pink-l); color: var(--pink-d); }
+.type-opt.sel { border-color: var(--pink); background: var(--pink-l); color: var(--pink-d); }
+.type-opt .tic { font-size: 24px; display: block; margin-bottom: 5px; }
+
+.range-lbl { font-size: 12px; font-weight: 700; color: var(--gray500); margin-top: 6px; }
+.field input[type=range] { padding: 4px 0; background: transparent; border: none; }
+.field input[type=range]:focus { border: none; }
+
+.modal-acts { display: flex; gap: 10px; margin-top: 20px; }
+.btn-cancel-m {
+  flex: 1; padding: 14px; border-radius: 14px; border: 2px solid var(--gray100);
+  background: var(--white); color: var(--gray700); cursor: pointer;
+  font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
+  transition: background 0.12s;
+}
+.btn-cancel-m:hover { background: var(--gray100); }
+.btn-save-m {
+  flex: 2; padding: 14px; border-radius: 14px; border: none;
+  background: var(--pink); color: #fff; cursor: pointer;
+  font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 14px rgba(255,110,180,0.35); transition: transform 0.12s;
+}
+.btn-save-m:hover { transform: translateY(-1px); }
+
+/* CONFIRM MODAL */
+.confirm-msg-text { font-size: 15px; color: var(--gray700); font-weight: 600; text-align: center; line-height: 1.7; margin-bottom: 22px; }
+.confirm-name { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--coral-d); text-align: center; margin-bottom: 8px; }
+.btn-yes-del {
+  flex: 2; padding: 14px; border-radius: 14px; border: none;
+  background: var(--coral); color: #fff; cursor: pointer;
+  font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 14px rgba(255,123,107,0.35); transition: transform 0.12s;
+}
+.btn-yes-del:hover { transform: translateY(-1px); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(70px);
+  background: var(--white); border-radius: 18px; padding: 14px 22px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 800; color: var(--gray900);
+  z-index: 300; box-shadow: 0 8px 32px rgba(180,80,160,0.18);
+  border: 2px solid var(--pink-l);
+  transition: transform 0.3s cubic-bezier(.2,.8,.4,1), opacity 0.3s;
+  opacity: 0; min-width: 240px; max-width: 90vw;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast-ico { font-size: 22px; }
+</style>
+</head>
+<body>
+<h2 class="sr-only">WayPoint — Accessible navigation app for blind users. Set personal location waypoints with spoken notes.</h2>
+
+<!-- ══════════════════════════
+     HOME SCREEN
+══════════════════════════ -->
+<div class="screen home-screen active" id="homeScreen">
+  <div class="home-header">
+    <div class="brand">
+      <div class="brand-dot">📍</div>
+      <div>
+        <div class="brand-name">WayPoint</div>
+        <div class="brand-sub">Navigation for everyone</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BIG ENTER BUTTON -->
+  <div class="enter-btn-wrap">
+    <button class="enter-btn" onclick="goToApp()" aria-label="Open the WayPoint navigation app">
+      <span class="enter-btn-icon">🗺️</span>
+      Open My WayPoints
+      <span class="enter-btn-icon">→</span>
+    </button>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-title">Navigate the world<br>on your own terms</div>
+    <div class="hero-subtitle">Personal location notes that speak to you — built for independence, designed with love.</div>
+  </div>
+
+  <!-- AUDIO PLAYER -->
+  <audio id="narAudio" src="Recording_4.mp3" preload="metadata"></audio>
+  <div class="audio-bar" style="margin: 0 32px 32px;">
+    <button class="play-btn" id="playBtn" onclick="toggleNarration()" aria-label="Play or pause the narration">▶</button>
+    <div class="audio-info">
+      <div class="audio-title" id="audioTitle">🎙️ Listen: Why we built WayPoint</div>
+      <div class="audio-sub" id="audioSub">Tap play to hear it in our own voice</div>
+      <div class="audio-progress"><div class="audio-fill" id="audioFill"></div></div>
+    </div>
+    <div id="audioDur" style="font-size:12px;font-weight:700;color:var(--gray500);white-space:nowrap;min-width:44px;text-align:right;">--:--</div>
+  </div>
+
+  <!-- WHY WE BUILT IT -->
+  <div class="home-section">
+    <div class="section-head">
+      <div class="section-icon pink">💛</div>
+      <div class="section-title">Why we built WayPoint</div>
+    </div>
+    <div class="story-card" id="storyCard">
+      <p>We built WayPoint because <strong>independence matters</strong>. So many navigation apps were made for people who can see — full of tiny menus, complex maps, and walls of text that are impossible to use with a screen reader or when your hands are full holding a cane.</p>
+      <p>We imagined a grandmother who memorized every step from her front door to her favorite bakery. We imagined a teenager learning a new college campus. We imagined a father who wanted to explore his neighborhood without asking for help every five minutes.</p>
+      <p><strong>WayPoint is for them.</strong> It lets anyone set personal notes at real-world locations — things like "sharp corner here, slow down" or "this is my favorite seat at the coffee shop." When you walk near that spot, your phone speaks the note to you. No maps to read. No tiny buttons to tap. Just your own voice, waiting for you.</p>
+      <p>We believe everyone deserves to move through the world with confidence. <strong>WayPoint is our way of helping make that happen.</strong></p>
+    </div>
+  </div>
+
+  <!-- HOW TO USE -->
+  <div class="home-section">
+    <div class="section-head">
+      <div class="section-icon mint">📖</div>
+      <div class="section-title">How to use WayPoint</div>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num n1">1</div>
+        <div class="how-title">Open the app</div>
+        <div class="how-desc">Tap the big "Open My WayPoints" button at the top of this page to get started.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num n2">2</div>
+        <div class="how-title">Add a waypoint</div>
+        <div class="how-desc">Tap the pink "+ Add" button and give the spot a name and a note — say anything that will help you later.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num n3">3</div>
+        <div class="how-title">Set your range</div>
+        <div class="how-desc">Choose how close you need to be before your phone announces the note — from 5 to 100 meters away.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num n4">4</div>
+        <div class="how-title">Add sub-notes</div>
+        <div class="how-desc">Inside a waypoint, add smaller notes like "favorite corner seat" or "step at entrance."</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num n5">5</div>
+        <div class="how-title">Hear it speak</div>
+        <div class="how-desc">Walk near a saved spot and your phone will read your note aloud automatically — no tapping needed.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num n6">6</div>
+        <div class="how-title">Tap Read anytime</div>
+        <div class="how-desc">Select any waypoint and press the blue "Read" button to hear its note immediately, on demand.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOICE COMMANDS -->
+  <div class="home-section">
+    <div class="section-head">
+      <div class="section-icon lemon">🎤</div>
+      <div class="section-title">Voice commands</div>
+    </div>
+    <div class="voice-commands-card">
+      <div style="font-size:14px;font-weight:700;color:var(--lav-d);margin-bottom:12px;">Tap the microphone button and say:</div>
+      <div class="cmd-list">
+        <div class="cmd-item">"Add waypoint"</div>
+        <div class="cmd-item">"Read nearby notes"</div>
+        <div class="cmd-item">"Navigate home"</div>
+        <div class="cmd-item">"What's around me"</div>
+        <div class="cmd-item">"Delete this"</div>
+        <div class="cmd-item">"Add sub-note"</div>
+        <div class="cmd-item">"Read my note"</div>
+        <div class="cmd-item">"Stop speaking"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOR FAMILY -->
+  <div class="home-section">
+    <div class="section-head">
+      <div class="section-icon sky">🤝</div>
+      <div class="section-title">A note for family & helpers</div>
+    </div>
+    <div class="family-card">
+      <p>If you are setting up WayPoint for someone you love, <strong>walk through their most important routes with them</strong>. Stop at every place that matters — the bakery, the bus stop, the tricky curb outside the pharmacy — and add a waypoint together.</p>
+      <p>Let them record the note in their own words. Their own descriptions will mean the most to them. You can always come back later to add more detail.</p>
+      <p><strong>The best waypoints are specific.</strong> Instead of "coffee shop," try "Green Door Café — three steps up at the entrance, order at the counter straight ahead, my usual is an oat latte." The more detail, the more confident and independent they will feel.</p>
+      <p>You can also add hazard waypoints for dangerous spots — sharp corners, broken pavements, busy driveways — so the app warns them before they get there. <strong>These small notes can make a huge difference.</strong></p>
+    </div>
+  </div>
+
+  <div class="home-footer">Made with love for independence · WayPoint © 2025</div>
+</div>
+
+<!-- ══════════════════════════
+     APP SCREEN
+══════════════════════════ -->
+<div class="screen app-screen" id="appScreen">
+  <div class="app-topbar">
+    <button class="back-btn" onclick="confirmGoHome()" aria-label="Go back to home page">← Home</button>
+    <div class="app-brand">📍 WayPoint</div>
+    <div class="gps-pill"><div class="gps-dot"></div> GPS LIVE</div>
+  </div>
+
+  <div class="announce-bar" role="alert" aria-live="assertive">
+    <div class="announce-icon">🔊</div>
+    <div class="announce-text" id="announceText">
+      Listening for nearby waypoints…
+      <span id="announceSub">Walk toward a saved location to hear your notes automatically</span>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" aria-label="Saved waypoints">
+      <div class="sidebar-top">
+        <div class="sidebar-label">My Waypoints</div>
+        <button class="big-add-btn" onclick="openAddModal()" aria-label="Add new waypoint">＋ Add New</button>
+      </div>
+      <div class="sidebar-list" id="wpList" role="list"></div>
+    </nav>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <!-- MAP -->
+      <div class="map-area" role="img" aria-label="Map showing your location and nearby waypoints">
+        <div class="map-dots"></div>
+        <div class="map-ring" style="width:100px;height:100px;left:50%;top:50%;margin:-50px 0 0 -50px;"></div>
+        <div class="map-ring" style="width:220px;height:220px;left:50%;top:50%;margin:-110px 0 0 -110px;animation-delay:1.1s;"></div>
+        <div class="map-ring" style="width:340px;height:340px;left:50%;top:50%;margin:-170px 0 0 -170px;animation-delay:2.2s;"></div>
+        <div class="user-dot">
+          <div class="user-arrow">⬆️</div>
+          <div class="user-inner"></div>
+        </div>
+        <div id="mapPins" aria-hidden="true"></div>
+        <div class="map-ctrl">
+          <button class="map-btn" aria-label="Zoom in">+</button>
+          <button class="map-btn" aria-label="Zoom out">−</button>
+          <button class="map-btn" onclick="speak('Map re-centered on your location.')" aria-label="Re-center map">◎</button>
+        </div>
+        <div class="map-range">Notify within <span id="radiusDisplay">20m</span></div>
+      </div>
+
+      <!-- DETAIL -->
+      <div class="detail" id="detailPanel" aria-live="polite">
+        <div class="zone-alert" id="zoneAlert">
+          <div class="zone-title">📍 You're nearby!</div>
+          <div class="zone-msg" id="zoneMsg"></div>
+        </div>
+        <div class="detail-head">
+          <div>
+            <div class="detail-name" id="detailName">Select a waypoint</div>
+            <div class="detail-type" id="detailType">Choose one from the list</div>
+          </div>
+          <div class="detail-btns" id="detailBtns"></div>
+        </div>
+        <div id="detailNoteBox" style="display:none">
+          <div class="note-box"><div class="note-lbl">Your note</div><div id="detailNote"></div></div>
+        </div>
+        <div class="stats" id="statsRow" style="display:none">
+          <div class="stat"><div class="stat-lbl">Distance</div><div class="stat-val green" id="statDist">—</div></div>
+          <div class="stat"><div class="stat-lbl">Direction</div><div class="stat-val" id="statDir">—</div></div>
+          <div class="stat"><div class="stat-lbl">Last Visit</div><div class="stat-val amber" id="statLast">—</div></div>
+        </div>
+        <div id="subnoteSection" style="display:none">
+          <div class="sec-lbl">
+            Sub-notes
+            <button onclick="openSubModal()" style="background:var(--lav-l);border:none;color:var(--lav-d);font-size:12px;font-weight:800;padding:5px 12px;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;" aria-label="Add sub-note">+ Sub-note</button>
+          </div>
+          <div class="sn-det-grid" id="snGrid"></div>
+        </div>
+      </div>
+
+      <!-- VOICE BAR -->
+      <div class="voice-bar">
+        <button class="voice-big-btn" id="voiceBtn" onclick="toggleVoice()" aria-label="Tap to record a voice note" aria-pressed="false">🎤</button>
+        <div class="voice-hint">
+          <strong id="voiceStatus">Tap to add a voice note</strong>
+          Say: "Add waypoint" · "Read nearby notes" · "Navigate home"
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD WAYPOINT MODAL ── -->
+<div class="overlay" id="addModal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+  <div class="modal">
+    <div class="modal-icon">📍</div>
+    <div class="modal-title" id="addModalTitle">New Waypoint</div>
+    <div class="modal-sub">Save this location with a personal note</div>
+    <div class="field"><label for="wpName">Name this place</label><input id="wpName" type="text" placeholder="e.g. My favorite coffee shop" autocomplete="off"></div>
+    <div class="field">
+      <label>Type of waypoint</label>
+      <div class="type-grid" role="group" aria-label="Waypoint type">
+        <div class="type-opt sel" onclick="selType(this,'place')" tabindex="0" role="radio" aria-checked="true"><span class="tic">☕</span>Place</div>
+        <div class="type-opt" onclick="selType(this,'hazard')" tabindex="0" role="radio" aria-checked="false"><span class="tic">⚠️</span>Hazard</div>
+        <div class="type-opt" onclick="selType(this,'turn')" tabindex="0" role="radio" aria-checked="false"><span class="tic">🧭</span>Turn</div>
+        <div class="type-opt" onclick="selType(this,'home')" tabindex="0" role="radio" aria-checked="false"><span class="tic">🏠</span>Home</div>
+      </div>
+    </div>
+    <div class="field"><label for="wpNote">Your note — describe this spot</label><textarea id="wpNote" placeholder="Include steps, hazards, smells, helpful details…"></textarea></div>
+    <div class="field">
+      <label for="wpRadius">Announce when I am within:</label>
+      <input id="wpRadius" type="range" min="5" max="100" value="20" step="5" oninput="document.getElementById('rval').textContent=this.value+'m'">
+      <div class="range-lbl">Range: <span id="rval">20m</span></div>
+    </div>
+    <div class="modal-acts">
+      <button class="btn-cancel-m" onclick="closeAll()">Cancel</button>
+      <button class="btn-save-m" onclick="saveWaypoint()">💾 Save Waypoint</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD SUB-NOTE MODAL ── -->
+<div class="overlay" id="subModal" role="dialog" aria-modal="true" aria-labelledby="subModalTitle">
+  <div class="modal">
+    <div class="modal-icon">📝</div>
+    <div class="modal-title" id="subModalTitle">Add Sub-note</div>
+    <div class="modal-sub" id="subModalSub">A specific spot inside this location</div>
+    <div class="field"><label for="snName">Name this spot</label><input id="snName" type="text" placeholder="e.g. My favorite corner seat"></div>
+    <div class="field"><label for="snNote">Describe it</label><textarea id="snNote" placeholder="Be as specific as possible…"></textarea></div>
+    <div class="modal-acts">
+      <button class="btn-cancel-m" onclick="closeAll()">Cancel</button>
+      <button class="btn-save-m" onclick="saveSubnote()">💾 Save Sub-note</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM DELETE WAYPOINT ── -->
+<div class="overlay" id="confirmDelModal" role="dialog" aria-modal="true" aria-labelledby="confirmDelTitle">
+  <div class="modal">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title" id="confirmDelTitle">Remove waypoint?</div>
+    <div class="confirm-name" id="confirmDelName"></div>
+    <div class="confirm-msg-text" id="confirmDelMsg">This will permanently delete this waypoint and all its sub-notes. This cannot be undone.</div>
+    <div class="modal-acts">
+      <button class="btn-cancel-m" onclick="closeAll()">Keep it</button>
+      <button class="btn-yes-del" id="confirmDelBtn" onclick="executeDelete()">Yes, remove it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM DELETE SUB-NOTE ── -->
+<div class="overlay" id="confirmSubDelModal" role="dialog" aria-modal="true" aria-labelledby="confirmSubDelTitle">
+  <div class="modal">
+    <div class="modal-icon">📝</div>
+    <div class="modal-title" id="confirmSubDelTitle">Remove sub-note?</div>
+    <div class="confirm-name" id="confirmSubDelName"></div>
+    <div class="confirm-msg-text">This sub-note will be permanently deleted.</div>
+    <div class="modal-acts">
+      <button class="btn-cancel-m" onclick="closeAll()">Keep it</button>
+      <button class="btn-yes-del" onclick="executeSubDelete()">Yes, remove it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM NAVIGATE ── -->
+<div class="overlay" id="confirmNavModal" role="dialog" aria-modal="true" aria-labelledby="confirmNavTitle">
+  <div class="modal">
+    <div class="modal-icon">🧭</div>
+    <div class="modal-title" id="confirmNavTitle">Start navigation?</div>
+    <div class="confirm-name" id="confirmNavName"></div>
+    <div class="confirm-msg-text" id="confirmNavMsg">Your phone will guide you with spoken directions to this waypoint.</div>
+    <div class="modal-acts">
+      <button class="btn-cancel-m" onclick="closeAll()">Cancel</button>
+      <button class="btn-save-m" onclick="executeNav()">Yes, navigate there</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM GO HOME ── -->
+<div class="overlay" id="confirmHomeModal" role="dialog" aria-modal="true" aria-labelledby="confirmHomeTitle">
+  <div class="modal">
+    <div class="modal-icon">🏠</div>
+    <div class="modal-title" id="confirmHomeTitle">Go back to home page?</div>
+    <div class="confirm-msg-text">Are you sure you want to leave the waypoint app and go back to the home page?</div>
+    <div class="modal-acts">
+      <button class="btn-cancel-m" onclick="closeAll()">Stay here</button>
+      <button class="btn-save-m" onclick="doGoHome()">Yes, go home</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="alert" aria-live="assertive">
+  <span class="toast-ico" id="toastIco">📍</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ─── DATA ─── */
+let waypoints = [
+  { id:1, name:"Favorite Coffee Shop", type:"place", icon:"☕",
+    note:"Order the oat latte at the counter on your right when entering. Staff are very helpful. There is a step at the entrance — three inches high. Railings are on both sides.",
+    dist:18, dir:"NW", last:"2 days ago", radius:20, x:42, y:38,
+    subs:[
+      {id:1,name:"My corner seat",icon:"🪑",desc:"Back left corner, quiet, near power outlet. Ask staff to guide you first time.",dist:"5m inside"},
+      {id:2,name:"Restroom",icon:"🚪",desc:"Down the hall from the counter, turn left, second door on right.",dist:"12m inside"},
+      {id:3,name:"Charging wall",icon:"🔌",desc:"Right-hand wall as you enter, below the big window.",dist:"8m inside"}
+    ]},
+  { id:2, name:"Sharp Corner — Oak St", type:"hazard", icon:"⚠️",
+    note:"Dangerous curb here. Uneven pavement drops 8 centimetres. Cyclists frequently come from the left without warning. Slow down and sweep your cane right first.",
+    dist:52, dir:"E", last:"Yesterday", radius:30, x:68, y:55,
+    subs:[{id:1,name:"Safe crossing",icon:"✅",desc:"Walk 6 metres south to a smooth ramp with an audible signal.",dist:"6m south"}]},
+  { id:3, name:"Bus Stop 42", type:"turn", icon:"🚌",
+    note:"Routes 12 and 7 stop here. The bench is on the right side of the shelter. Driver will announce your stop. Next stop after this is Oak Street library.",
+    dist:110, dir:"SW", last:"3 days ago", radius:15, x:28, y:68, subs:[]},
+  { id:4, name:"Home", type:"home", icon:"🏠",
+    note:"My apartment building. Door code is saved in your phone contacts. Mailbox is third from the left at the main entrance. Lift is straight ahead, 8 steps from the door.",
+    dist:380, dir:"N", last:"Today", radius:10, x:54, y:18,
+    subs:[{id:1,name:"Lobby door",icon:"🚪",desc:"Automatic sliding doors, motion sensor on the right-hand post.",dist:"At entrance"}]}
+];
+
+let activeId = 1;
+let selType_ = 'place';
+let pendDelId = null;
+let pendDelSubId = null;
+let pendDelWpId = null;
+let isRec = false;
+let recTimer;
+let narrating = false;
+let narUtter = null;
+let narProgress = 0;
+let narTimer = null;
+
+/* ─── SCREEN SWITCHING ─── */
+function goToApp() {
+  document.getElementById('homeScreen').classList.remove('active');
+  document.getElementById('appScreen').classList.add('active');
+  render(); renderDetail();
+  speak("Welcome to your WayPoints. Tap any location in the list on the left to hear your note. Tap the pink Add New button to save a new spot.");
+}
+function confirmGoHome() {
+  document.getElementById('confirmHomeModal').classList.add('open');
+  speak("Are you sure you want to go back to the home page?");
+}
+function doGoHome() {
+  closeAll();
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('homeScreen').classList.add('active');
+  window.speechSynthesis.cancel();
+}
+
+/* ─── SPEECH ─── */
+function speak(msg) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(msg);
+  u.rate = 0.88; u.pitch = 1.08; u.volume = 1;
+  // Pick a warm, human voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = ['Samantha','Karen','Moira','Tessa','Fiona','Serena','Google UK English Female','Microsoft Zira','Alex'];
+  for (const name of preferred) {
+    const v = voices.find(v => v.name.includes(name));
+    if (v) { u.voice = v; break; }
+  }
+  window.speechSynthesis.speak(u);
+  document.getElementById('announceText').textContent = "Speaking…";
+  document.getElementById('announceSub').textContent = msg.slice(0, 90) + (msg.length > 90 ? '…' : '');
+}
+
+/* ─── NARRATION — real audio file ─── */
+const narAudio = document.getElementById('narAudio');
+const playBtn  = document.getElementById('playBtn');
+const audioFill  = document.getElementById('audioFill');
+const audioTitle = document.getElementById('audioTitle');
+const audioSub   = document.getElementById('audioSub');
+const audioDur   = document.getElementById('audioDur');
+
+function fmt(s) {
+  if (!isFinite(s)) return '--:--';
+  const m = Math.floor(s/60), sec = Math.floor(s%60);
+  return m+':'+(sec<10?'0':'')+sec;
+}
+
+narAudio.addEventListener('loadedmetadata', () => {
+  audioDur.textContent = fmt(narAudio.duration);
+});
+
+narAudio.addEventListener('timeupdate', () => {
+  if (!narAudio.duration) return;
+  const pct = (narAudio.currentTime / narAudio.duration) * 100;
+  audioFill.style.width = pct + '%';
+  const remaining = narAudio.duration - narAudio.currentTime;
+  audioSub.textContent = `${fmt(narAudio.currentTime)} / ${fmt(narAudio.duration)}  —  ${fmt(remaining)} remaining`;
+});
+
+narAudio.addEventListener('ended', () => {
+  narrating = false;
+  playBtn.textContent = '▶';
+  playBtn.classList.remove('playing');
+  audioTitle.textContent = '🎙️ Listen: Why we built WayPoint';
+  audioSub.textContent = 'Tap to play again';
+  audioFill.style.width = '0%';
+  narAudio.currentTime = 0;
+});
+
+narAudio.addEventListener('error', () => {
+  audioSub.textContent = 'Audio file not found — make sure Recording_4.mp3 is in the same folder as this HTML file.';
+});
+
+function toggleNarration() {
+  if (!narAudio.paused) {
+    narAudio.pause();
+    narrating = false;
+    playBtn.textContent = '▶';
+    playBtn.classList.remove('playing');
+    audioTitle.textContent = '🎙️ Listen: Why we built WayPoint';
+    return;
+  }
+  narAudio.play().then(() => {
+    narrating = true;
+    playBtn.textContent = '⏸';
+    playBtn.classList.add('playing');
+    audioTitle.textContent = '▶ Now playing — our story';
+  }).catch(() => {
+    audioSub.textContent = 'Could not play audio. Make sure Recording_4.mp3 is in the same folder as this file.';
+  });
+}
+
+/* ─── RENDER SIDEBAR ─── */
+function render() {
+  const list = document.getElementById('wpList');
+  if (!waypoints.length) {
+    list.innerHTML = `<div class="empty-wp"><div class="big">📍</div><p>No waypoints yet.<br>Tap <strong>+ Add New</strong> to start.</p></div>`;
+    clearDetail(); return;
+  }
+  list.innerHTML = '';
+  waypoints.forEach(wp => {
+    const act = wp.id === activeId;
+    const div = document.createElement('div');
+    div.className = `wp-card${act?' active open':''}`;
+    div.setAttribute('role','listitem');
+    div.setAttribute('tabindex','0');
+    div.setAttribute('aria-label',`${wp.name}, ${wp.dist} metres ${wp.dir}. Tap to select.`);
+    div.onclick = () => { activeId=wp.id; render(); renderDetail(); speak(`${wp.name}. ${wp.dist} metres ${wp.dir}.`); };
+    div.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ activeId=wp.id; render(); renderDetail(); } };
+
+    let snHTML = '';
+    if (act && wp.subs.length) {
+      snHTML = `<div class="subnotes-expanded">` +
+        wp.subs.map(s=>`<div class="sn-row">
+          <div class="sn-pill" tabindex="0" role="button" aria-label="${s.name}" onclick="event.stopPropagation();speak('${s.name}. ${s.desc}')">
+            <div class="sn-dot"></div>${s.name}
+          </div>
+          <button class="sn-del-btn" onclick="event.stopPropagation();askDelSub(${wp.id},${s.id})" aria-label="Remove ${s.name}">✕</button>
+        </div>`).join('') + `</div>`;
+    }
+
+    div.innerHTML = `
+      <div class="wp-row">
+        <div class="wp-icon t-${wp.type}">${wp.icon}</div>
+        <div class="wp-meta">
+          <div class="wp-name">${wp.name}</div>
+          <div class="wp-snippet">${wp.note.slice(0,48)}…</div>
+          <div class="wp-dist">${wp.dist}m · ${wp.dir}
+            ${wp.subs.length?`<span class="wp-badge badge-sub">${wp.subs.length} sub</span>`:''}
+            ${wp.type==='hazard'?`<span class="wp-badge badge-alert">⚠ alert</span>`:''}
+          </div>
+        </div>
+        <button class="wp-del-btn" onclick="event.stopPropagation();askDel(${wp.id})" aria-label="Remove ${wp.name}" title="Remove waypoint">✕</button>
+      </div>
+      ${snHTML}`;
+    list.appendChild(div);
+  });
+  renderPins();
+}
+
+/* ─── RENDER DETAIL ─── */
+function renderDetail() {
+  const wp = waypoints.find(w=>w.id===activeId);
+  if (!wp) { clearDetail(); return; }
+  document.getElementById('detailName').textContent = wp.name;
+  document.getElementById('detailType').textContent = `${wp.type.toUpperCase()} · ${wp.dist}m away`;
+  document.getElementById('detailNote').textContent = wp.note;
+  document.getElementById('statDist').textContent = wp.dist+'m';
+  document.getElementById('statDir').textContent = wp.dir;
+  document.getElementById('statLast').textContent = wp.last;
+  document.getElementById('detailNoteBox').style.display = 'block';
+  document.getElementById('statsRow').style.display = 'grid';
+  document.getElementById('subnoteSection').style.display = 'block';
+
+  const inRange = wp.dist <= wp.radius;
+  const za = document.getElementById('zoneAlert');
+  za.className = 'zone-alert'+(inRange?' show':'');
+  if (inRange) document.getElementById('zoneMsg').textContent = `You are within ${wp.radius}m. "${wp.note.slice(0,70)}…"`;
+
+  document.getElementById('detailBtns').innerHTML = `
+    <button class="act-btn btn-read" onclick="speakNote()" aria-label="Read note aloud">🔊 Read</button>
+    <button class="act-btn btn-sub"  onclick="openSubModal()" aria-label="Add sub-note">＋ Sub-note</button>
+    <button class="act-btn btn-nav"  onclick="askNav(${wp.id})" aria-label="Navigate to ${wp.name}">🧭 Navigate</button>
+    <button class="act-btn btn-del"  onclick="askDel(${wp.id})" aria-label="Remove ${wp.name}">🗑 Remove</button>
+  `;
+
+  const sg = document.getElementById('snGrid');
+  sg.innerHTML = '';
+  if (!wp.subs.length) {
+    sg.innerHTML = `<div style="font-size:13px;color:var(--gray300);font-weight:700;padding:6px 0;">No sub-notes yet — tap + Sub-note to add one.</div>`;
+  } else {
+    wp.subs.forEach(s => {
+      const d = document.createElement('div');
+      d.className = 'sn-det-item';
+      d.setAttribute('tabindex','0');
+      d.setAttribute('role','button');
+      d.setAttribute('aria-label',`${s.name}: ${s.desc}`);
+      d.onclick = () => { speak(`${s.name}. ${s.desc}`); showToast('🔊',s.name); };
+      d.onkeydown = e => { if(e.key==='Enter'||e.key===' ') d.click(); };
+      d.innerHTML = `<div class="sn-det-icon">${s.icon}</div>
+        <div class="sn-det-content"><div class="sn-det-name">${s.name}</div><div class="sn-det-desc">${s.desc}</div></div>
+        <div class="sn-det-dist">${s.dist}</div>
+        <button class="sn-det-del" onclick="event.stopPropagation();askDelSub(${wp.id},${s.id})" aria-label="Remove sub-note ${s.name}">✕</button>`;
+      sg.appendChild(d);
+    });
+  }
+}
+
+function clearDetail() {
+  document.getElementById('detailName').textContent = 'Select a waypoint';
+  document.getElementById('detailType').textContent = 'Choose one from the list';
+  document.getElementById('detailBtns').innerHTML = '';
+  document.getElementById('detailNoteBox').style.display = 'none';
+  document.getElementById('statsRow').style.display = 'none';
+  document.getElementById('subnoteSection').style.display = 'none';
+  document.getElementById('zoneAlert').className = 'zone-alert';
+}
+
+/* ─── MAP PINS ─── */
+function renderPins() {
+  const c = document.getElementById('mapPins');
+  c.innerHTML = '';
+  waypoints.forEach(wp => {
+    const pin = document.createElement('div');
+    pin.className = `map-pin pin-${wp.type}`;
+    pin.style.left = wp.x+'%'; pin.style.top = wp.y+'%';
+    if (wp.id===activeId) pin.style.zIndex = 9;
+    pin.innerHTML = `<div class="pin-body"><span>${wp.icon}</span></div><div class="pin-lbl">${wp.name.split(' ').slice(0,2).join(' ')}</div>`;
+    pin.onclick = () => { activeId=wp.id; render(); renderDetail(); };
+    c.appendChild(pin);
+    if (wp.id===activeId) {
+      const r = document.createElement('div');
+      r.className = 'pin-radius';
+      const sz = wp.radius*2.6;
+      r.style.cssText = `width:${sz}px;height:${sz}px;left:calc(${wp.x}% - ${sz/2}px);top:calc(${wp.y}% - ${sz/2}px);`;
+      c.appendChild(r);
+    }
+  });
+}
+
+/* ─── DELETE FLOWS ─── */
+function askDel(id) {
+  const wp = waypoints.find(w=>w.id===id);
+  if (!wp) return;
+  pendDelId = id;
+  document.getElementById('confirmDelName').textContent = wp.name;
+  document.getElementById('confirmDelMsg').textContent = `Are you sure you want to remove "${wp.name}"? This will also delete its ${wp.subs.length} sub-note${wp.subs.length!==1?'s':''}. This cannot be undone.`;
+  document.getElementById('confirmDelModal').classList.add('open');
+  speak(`Are you sure you want to remove ${wp.name}? Press Yes remove it to confirm, or Keep it to cancel.`);
+  setTimeout(() => document.getElementById('confirmDelBtn').focus(), 100);
+}
+
+function executeDelete() {
+  const wp = waypoints.find(w=>w.id===pendDelId);
+  const name = wp?.name || 'Waypoint';
+  waypoints = waypoints.filter(w=>w.id!==pendDelId);
+  if (activeId===pendDelId) activeId = waypoints.length ? waypoints[0].id : null;
+  pendDelId = null;
+  closeAll(); render();
+  if (activeId) renderDetail(); else clearDetail();
+  showToast('🗑️', `${name} removed`);
+  speak(`${name} has been removed.`);
+}
+
+function askDelSub(wpId, subId) {
+  const wp = waypoints.find(w=>w.id===wpId);
+  const sub = wp?.subs.find(s=>s.id===subId);
+  if (!sub) return;
+  pendDelWpId = wpId; pendDelSubId = subId;
+  document.getElementById('confirmSubDelName').textContent = sub.name;
+  document.getElementById('confirmSubDelModal').classList.add('open');
+  speak(`Are you sure you want to remove the sub-note ${sub.name}? Press Yes remove it to confirm.`);
+}
+
+function executeSubDelete() {
+  const wp = waypoints.find(w=>w.id===pendDelWpId);
+  if (!wp) return;
+  const sub = wp.subs.find(s=>s.id===pendDelSubId);
+  const name = sub?.name || 'Sub-note';
+  wp.subs = wp.subs.filter(s=>s.id!==pendDelSubId);
+  pendDelSubId = null; pendDelWpId = null;
+  closeAll(); render(); renderDetail();
+  showToast('📝', `${name} removed`);
+  speak(`${name} removed.`);
+}
+
+/* ─── NAVIGATE CONFIRM ─── */
+function askNav(id) {
+  const wp = waypoints.find(w=>w.id===id);
+  if (!wp) return;
+  document.getElementById('confirmNavName').textContent = wp.name;
+  document.getElementById('confirmNavMsg').textContent = `Are you sure you want to navigate to ${wp.name}? It is ${wp.dist} metres to the ${wp.dir}.`;
+  document.getElementById('confirmNavModal').classList.add('open');
+  speak(`Are you sure you want to navigate to ${wp.name}? It is ${wp.dist} metres to the ${wp.dir}.`);
+}
+
+function executeNav() {
+  const wp = waypoints.find(w=>w.id===activeId);
+  closeAll();
+  if (!wp) return;
+  speak(`Starting navigation to ${wp.name}. Head ${wp.dir} for ${wp.dist} metres.`);
+  showToast('🧭', `Navigating to ${wp.name}`);
+}
+
+/* ─── ADD FLOWS ─── */
+function openAddModal() {
+  document.getElementById('wpName').value=''; document.getElementById('wpNote').value='';
+  document.querySelectorAll('.type-opt').forEach((o,i)=>{o.classList.toggle('sel',i===0);o.setAttribute('aria-checked',i===0);});
+  selType_='place';
+  document.getElementById('addModal').classList.add('open');
+  setTimeout(()=>document.getElementById('wpName').focus(),120);
+  speak('Add waypoint. Enter a name for this place.');
+}
+
+function openSubModal() {
+  const wp = waypoints.find(w=>w.id===activeId);
+  if (!wp) return;
+  document.getElementById('snName').value=''; document.getElementById('snNote').value='';
+  document.getElementById('subModalSub').textContent = `Inside or near: ${wp.name}`;
+  document.getElementById('subModal').classList.add('open');
+  setTimeout(()=>document.getElementById('snName').focus(),120);
+  speak('Add sub-note. Name this specific spot.');
+}
+
+function closeAll() {
+  document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));
+}
+
+function selType(el, type) {
+  document.querySelectorAll('.type-opt').forEach(o=>{o.classList.remove('sel');o.setAttribute('aria-checked','false');});
+  el.classList.add('sel'); el.setAttribute('aria-checked','true'); selType_=type;
+}
+
+function saveWaypoint() {
+  const name = document.getElementById('wpName').value.trim();
+  const note = document.getElementById('wpNote').value.trim();
+  if (!name) { speak('Please enter a name for this waypoint.'); document.getElementById('wpName').focus(); return; }
+  const icons = {place:'☕',hazard:'⚠️',turn:'🧭',home:'🏠'};
+  const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+  const nw = {
+    id:Date.now(), name, type:selType_, icon:icons[selType_]||'📍',
+    note: note||'No note added.',
+    dist:Math.floor(Math.random()*300)+20,
+    dir:dirs[Math.floor(Math.random()*8)],
+    last:'Just now',
+    radius:parseInt(document.getElementById('wpRadius').value),
+    x:Math.random()*70+10, y:Math.random()*70+10, subs:[]
+  };
+  waypoints.push(nw); activeId=nw.id;
+  closeAll(); render(); renderDetail();
+  showToast('📍',`${name} saved`);
+  speak(`Waypoint saved. ${name}. ${note||''}`);
+}
+
+function saveSubnote() {
+  const name = document.getElementById('snName').value.trim();
+  const desc = document.getElementById('snNote').value.trim();
+  if (!name) { speak('Please enter a name for this sub-note.'); document.getElementById('snName').focus(); return; }
+  const wp = waypoints.find(w=>w.id===activeId);
+  if (!wp) return;
+  wp.subs.push({id:Date.now(),name,icon:'📝',desc:desc||'No description',dist:'nearby'});
+  closeAll(); render(); renderDetail();
+  showToast('📝','Sub-note saved');
+  speak(`Sub-note saved. ${name}.`);
+}
+
+/* ─── SPEAK NOTE ─── */
+function speakNote() {
+  const wp = waypoints.find(w=>w.id===activeId);
+  if (!wp) return;
+  speak(`${wp.name}. ${wp.note}`);
+  showToast('🔊',`Reading: ${wp.name}`);
+}
+
+/* ─── VOICE BTN ─── */
+function toggleVoice() {
+  const btn = document.getElementById('voiceBtn');
+  const st = document.getElementById('voiceStatus');
+  isRec = !isRec;
+  btn.classList.toggle('rec',isRec);
+  btn.setAttribute('aria-pressed',isRec);
+  if (isRec) {
+    st.textContent = 'Recording… tap again to stop';
+    speak('Recording. Say your note now.');
+    recTimer = setTimeout(()=>{ isRec=false; btn.classList.remove('rec'); btn.setAttribute('aria-pressed','false'); st.textContent='Tap to add a voice note'; showToast('🎤','Voice note saved'); speak('Voice note saved.'); },5000);
+  } else { clearTimeout(recTimer); st.textContent='Tap to add a voice note'; speak('Recording stopped.'); }
+}
+
+/* ─── TOAST ─── */
+let toastTimer;
+function showToast(ico,msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toastIco').textContent=ico;
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ─── CLOSE ON OVERLAY CLICK ─── */
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeAll();}));
+
+/* ─── VOICES LOAD ─── */
+window.speechSynthesis.onvoiceschanged = ()=>{ /* voices now available */ };
+
+/* ─── PROXIMITY SIM ─── */
+let simIdx=0;
+const simAlerts=[
+  {id:1,msg:"You are 18 metres from Favorite Coffee Shop. Your note: Order the oat latte at the counter on your right. There is a step at the entrance."},
+  {id:2,msg:"Approaching Sharp Corner on Oak Street. Warning: uneven pavement, drops 8 centimetres. Slow down and sweep your cane right first."}
+];
+setInterval(()=>{
+  if(document.getElementById('appScreen').classList.contains('active')){
+    const a=simAlerts[simIdx%simAlerts.length]; simIdx++;
+    document.getElementById('announceText').textContent='📍 Nearby waypoint detected';
+    document.getElementById('announceSub').textContent=a.msg;
+  }
+},14000);
+</script>
+</body>
+</html>
