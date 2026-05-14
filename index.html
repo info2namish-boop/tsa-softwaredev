@@ -443,7 +443,9 @@ body {
 
   <!-- AUDIO PLAYER -->
   <!-- ✅ Place narration.mp3 in the same folder as this index.html file -->
-  <audio id="narAudio" src="narration.mp3" preload="metadata"></audio>
+  <audio id="narAudio" preload="metadata">
+     <source src="/narration.mp3" type="audio/mpeg">
+  </audio>
   <div class="audio-bar">
     <button class="play-btn" id="playBtn" onclick="toggleNarration()" aria-label="Play or pause the narration">▶</button>
     <div class="audio-info">
